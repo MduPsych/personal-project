@@ -21,5 +21,11 @@ variable "lambda_artifact_path" {
 variable "log_retention_days" {
   description = "Number of days to retain Lambda logs"
   type        = number
-  default     = 14
+  default     = 365
+}
+
+variable "reserved_concurrency" {
+  description = "Reserved concurrent executions for Lambda"
+  type        = number
+  default     = 10
 }

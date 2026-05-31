@@ -74,6 +74,24 @@ resource "aws_iam_role_policy" "lambda_policy" {
         ]
         Resource = "arn:aws:logs:*:*:*"
       }
+      {
+        Sid    = "SQSAccess"
+        Effect = "Allow"
+        Action = [
+          "sqs:SendMessage"
+        ]
+        Resource = "arn:aws:sqs:*:*:${var.environment}-email-assistant-dlq"
+      },
+      {
+        Sid    = "KMSAccess"
+        Effect = "Allow"
+        Action = [
+          "kms:Decrypt",
+          "kms:GenerateDataKey"
+        ]
+        Resource = "*"
+      }
     ]
   })
 }
+
