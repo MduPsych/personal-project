@@ -79,8 +79,8 @@ def lambda_handler(event: dict, context: Any) -> dict:
             }
         if not bucket:
             return {
-            "statusCode": 400,
-            "body": json.dumps({"error": "Missing bucket name"})
+                "statusCode": 400,
+                "body": json.dumps({"error": "Missing bucket name"})
             }
         # Get email from S3
         email_content = get_email_from_s3(bucket, key)
