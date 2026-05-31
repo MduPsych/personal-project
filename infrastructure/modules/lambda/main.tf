@@ -7,21 +7,27 @@ terraform {
   }
 }
 
-resource "aws_iam_role" "lambda_role" {
-  name = "${var.environment}-email-assistant-lambda-role"
+resource "aws_lambda_function" "email_assistant" {
+  function_name = "${var.environment}-email-assistant"
+  role          = var.lambda_role_arn
+  handler       = "handler.lambda_handler"
+  runtime       = "python3.11"
+  timeout       = 30
+  memory_size   = 256
 
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "lambda.amazonaws.com"
-        }
-      }
-    ]
-  })
+  filename         = var.lambda_artifact_path
+  source_code_hash = filebase64sha256(var.lambda_artifact_path)
+
+  environment {
+    variables = {
+      ENVIRONMENT = var.environment
+      BUCKET_NAME = var.bucket_name
+    }
+  }
+
+  tracing_config {
+    mode = "Active"
+  }
 
   tags = {
     Environment = var.environment
@@ -29,51 +35,17 @@ resource "aws_iam_role" "lambda_role" {
   }
 }
 
-resource "aws_iam_role_policy" "lambda_policy" {
-  name = "${var.environment}-email-assistant-lambda-policy"
-  role = aws_iam_role.lambda_role.id
+resource "aws_cloudwatch_log_group" "email_assistant" {
+  name              = "/aws/lambda/${var.environment}-email-assistant"
+  retention_in_days = var.log_retention_days
 
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Sid    = "S3Access"
-        Effect = "Allow"
-        Action = [
-          "s3:GetObject",
-          "s3:ListBucket"
-        ]
-        Resource = [
-          "arn:aws:s3:::${var.bucket_name}",
-          "arn:aws:s3:::${var.bucket_name}/*"
-        ]
-      },
-      {
-        Sid    = "ComprehendAccess"
-        Effect = "Allow"
-        Action = [
-          "comprehend:DetectSentiment"
-        ]
-        Resource = "*"
-      },
-      {
-        Sid    = "BedrockAccess"
-        Effect = "Allow"
-        Action = [
-          "bedrock:InvokeModel"
-        ]
-        Resource = "arn:aws:bedrock:us-east-1::foundation-model/amazon.nova-micro-v1:0"
-      },
-      {
-        Sid    = "CloudWatchLogs"
-        Effect = "Allow"
-        Action = [
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:PutLogEvents"
-        ]
-        Resource = "arn:aws:logs:*:*:*"
-      }
-    ]
-  })
+  tags = {
+    Environment = var.environment
+    Project     = "email-assistant"
+  }
+}
+
+resource "aws_lambda_function_event_invoke_config" "email_assistant" {
+  function_name          = aws_lambda_function.email_assistant.function_name
+  maximum_retry_attempts = 1
 }

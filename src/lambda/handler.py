@@ -47,12 +47,11 @@ def analyse_sentiment(text: str) -> dict:
 def generate_reply(email_content: str, sentiment: str) -> str:
     """Generate email reply suggestion using Bedrock."""
     prompt = f"""You are a professional email assistant.
-    
-Email content: {email_content}
-Detected sentiment: {sentiment}
+    Email content: {email_content}
+    Detected sentiment: {sentiment}
 
-Generate a professional reply to this email.
-Keep it concise and appropriate to the sentiment."""
+    Generate a professional reply to this email.
+    Keep it concise and appropriate to the sentiment."""
 
     try:
         response = bedrock_client.converse(
