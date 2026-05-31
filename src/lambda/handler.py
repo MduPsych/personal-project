@@ -55,9 +55,7 @@ def generate_reply(email_content: str, sentiment: str) -> str:
 
     try:
         messages = [{"role": "user", "content": [{"text": prompt}]}]
-        response = bedrock_client.converse(
-            modelId=MODEL_ID, messages=messages
-        )
+        response = bedrock_client.converse(modelId=MODEL_ID, messages=messages)
         return response["output"]["message"]["content"][0]["text"]
     except Exception as e:
         logger.error("Failed to generate reply: %s", str(e))
