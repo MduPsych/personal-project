@@ -167,7 +167,18 @@ jobs:
         with:
           directory: infrastructure
           soft_fail: true
+          
+      - name: Download Lambda artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: lambda-artifact
+          path: .
 
+      - name: Terraform Plan
+        run: |
+          terraform -chdir=infrastructure plan \
+            -var="lambda_artifact_path=../email-assistant.zip" \
+            -no-color
       - name: Terraform Plan
         run: |
           terraform -chdir=infrastructure plan \

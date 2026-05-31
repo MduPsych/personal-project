@@ -10,6 +10,7 @@ terraform {
     bucket         = "mdu-terraform-state-2026"
     region         = "af-south-1"
     dynamodb_table = "mdu-terraform-locks"
+    use_lockfile   = true
     encrypt        = true
   }
 }
