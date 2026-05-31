@@ -226,8 +226,7 @@ jobs:
         run: pip install boto3 pytest
 
       - name: Run integration tests
-        run: |
-          pytest src/lambda/tests/ -v -k "integration" || echo "No integration tests found"
+        run: pytest src/lambda/tests/ -v -k "integration"
         continue-on-error: true
 
   notify-dev:
@@ -236,4 +235,10 @@ jobs:
     needs: integration-tests
     if: always()
     steps:
-      - name: No
+      - name: Notify on success
+        if: ${{ needs.integration-tests.result == 'success' }}
+        run: echo "Dev deployment successful"
+
+      - name: Notify on failure
+        if: ${{ needs.integration-tests.result == 'failure' }}
+        run: echo "Dev deployment failed"
