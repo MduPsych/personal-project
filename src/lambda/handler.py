@@ -13,7 +13,7 @@ s3_client = boto3.client("s3")
 comprehend_client = boto3.client("comprehend")
 bedrock_client = boto3.client(
     "bedrock-runtime",
-      region_name="us-east-1")
+    region_name="us-east-1")
 
 # Environment variables
 BUCKET_NAME = os.environ.get("BUCKET_NAME")
@@ -92,7 +92,7 @@ def lambda_handler(event: dict, context: Any) -> dict:
         # Analyse sentiment
         sentiment_result = analyse_sentiment(email_content)
         logger.info("Sentiment analysis complete: %s",
-                     sentiment_result["sentiment"])
+                    sentiment_result["sentiment"])
 
         # Generate reply
         reply = generate_reply(email_content, sentiment_result["sentiment"])
