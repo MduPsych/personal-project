@@ -56,8 +56,8 @@ def generate_reply(email_content: str, sentiment: str) -> str:
     try:
         response = bedrock_client.converse(
             modelId=MODEL_ID, messages=[{"role": 
-                                         "user", "content": 
-                                         [{"text": prompt}]}]
+            "user", "content": 
+            [{"text": prompt}]}]
         )
         return response["output"]["message"]["content"][0]["text"]
     except Exception as e:
@@ -91,7 +91,7 @@ def lambda_handler(event: dict, context: Any) -> dict:
         # Analyse sentiment
         sentiment_result = analyse_sentiment(email_content)
         logger.info("Sentiment analysis complete: %s",
-                     sentiment_result["sentiment"])
+        sentiment_result["sentiment"])
 
         # Generate reply
         reply = generate_reply(email_content, sentiment_result["sentiment"])
