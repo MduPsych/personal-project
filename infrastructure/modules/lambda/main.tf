@@ -9,16 +9,7 @@ terraform {
 
 data "aws_caller_identity" "current" {}
 
-resource "aws_kms_key" "email_assistant" {
-  description             = "${var.environment}-email-assistant-key"
-  deletion_window_in_days = 7
-  enable_key_rotation     = true
 
-  tags = {
-    Environment = var.environment
-    Project     = "email-assistant"
-  }
-}
 
 resource "aws_kms_alias" "email_assistant" {
   name          = "alias/${var.environment}-email-assistant"
