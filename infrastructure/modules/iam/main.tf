@@ -73,7 +73,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
           "logs:PutLogEvents"
         ]
         Resource = "arn:aws:logs:*:*:*"
-      }
+      },
       {
         Sid    = "SQSAccess"
         Effect = "Allow"
