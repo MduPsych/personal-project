@@ -1,0 +1,1 @@
+key = "email-assistant/dev/terraform.tfstate"
