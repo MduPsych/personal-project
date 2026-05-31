@@ -41,4 +41,5 @@ module "lambda" {
   bucket_name          = module.s3.bucket_name
   lambda_artifact_path = var.lambda_artifact_path
   log_retention_days   = var.log_retention_days
+  aws_region           = var.aws_region
 }

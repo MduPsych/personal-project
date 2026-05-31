@@ -29,3 +29,7 @@ variable "reserved_concurrency" {
   type        = number
   default     = 10
 }
+variable "aws_region" {
+  description = "AWS region for KMS key policy"
+  type        = string
+}

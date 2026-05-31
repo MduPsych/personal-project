@@ -7,6 +7,8 @@ terraform {
   }
 }
 
+data "aws_caller_identity" "current" {}
+
 resource "aws_kms_key" "email_assistant" {
   description             = "${var.environment}-email-assistant-key"
   deletion_window_in_days = 7
@@ -45,42 +47,50 @@ resource "aws_cloudwatch_log_group" "email_assistant" {
   }
 }
 
-resource "aws_lambda_function" "email_assistant" {
-  function_name = "${var.environment}-email-assistant"
-  role          = var.lambda_role_arn
-  handler       = "handler.lambda_handler"
-  runtime       = "python3.11"
-  timeout       = 30
-  memory_size   = 256
+resource "aws_kms_key" "email_assistant" {
+  description             = "${var.environment}-email-assistant-key"
+  deletion_window_in_days = 7
+  enable_key_rotation     = true
 
-  filename         = var.lambda_artifact_path
-  source_code_hash = filebase64sha256(var.lambda_artifact_path)
-
-  reserved_concurrent_executions = var.reserved_concurrency
-
-  kms_key_arn = aws_kms_key.email_assistant.arn
-
-  dead_letter_config {
-    target_arn = aws_sqs_queue.lambda_dlq.arn
-  }
-
-  environment {
-    variables = {
-      ENVIRONMENT = var.environment
-      BUCKET_NAME = var.bucket_name
-    }
-  }
-
-  tracing_config {
-    mode = "Active"
-  }
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "Enable IAM User Permissions"
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        }
+        Action   = "kms:*"
+        Resource = "*"
+      },
+      {
+        Sid    = "Allow CloudWatch Logs"
+        Effect = "Allow"
+        Principal = {
+          Service = "logs.${var.aws_region}.amazonaws.com"
+        }
+        Action = [
+          "kms:Encrypt",
+          "kms:Decrypt",
+          "kms:ReEncrypt*",
+          "kms:GenerateDataKey*",
+          "kms:DescribeKey"
+        ]
+        Resource = "*"
+        Condition = {
+          ArnEquals = {
+            "kms:EncryptionContext:aws:logs:arn" = "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.environment}-email-assistant"
+          }
+        }
+      }
+    ]
+  })
 
   tags = {
     Environment = var.environment
     Project     = "email-assistant"
   }
-
-  depends_on = [aws_cloudwatch_log_group.email_assistant]
 }
 
 resource "aws_lambda_function_event_invoke_config" "email_assistant" {
