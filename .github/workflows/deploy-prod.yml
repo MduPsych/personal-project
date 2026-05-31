@@ -123,7 +123,7 @@ jobs:
             s3://mdu-terraform-state-2026/artifacts/prod/email-assistant.zip
 
       - name: Upload artifact for pipeline
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: lambda-artifact
           path: email-assistant.zip

@@ -127,7 +127,7 @@ jobs:
         run: echo "ARTIFACT_PATH=email-assistant.zip" >> $GITHUB_ENV
 
       - name: Upload artifact for pipeline
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: lambda-artifact
           path: email-assistant.zip
