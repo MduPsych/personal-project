@@ -170,6 +170,12 @@ jobs:
           skip_check: CKV_AWS_272,CKV_AWS_117,CKV_AWS_144
           # CKV_AWS_144 skipped - replica bucket is same region by design for learning
           # Cross region replication requires separate AWS accounts - Phase 2
+      
+      - name: Download Lambda artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: lambda-artifact
+          path: .
 
       - name: Terraform Plan
         run: |
