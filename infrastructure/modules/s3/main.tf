@@ -238,3 +238,42 @@ resource "aws_s3_bucket_public_access_block" "replica_bucket" {
   ignore_public_acls      = true
   restrict_public_buckets = true
 }
+
+resource "aws_s3_bucket_logging" "replica_bucket" {
+  bucket        = aws_s3_bucket.replica_bucket.id
+  target_bucket = aws_s3_bucket.replica_bucket.id
+  target_prefix = "access-logs/"
+}
+
+resource "aws_s3_bucket_notification" "replica_bucket" {
+  bucket = aws_s3_bucket.replica_bucket.id
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "replica_bucket" {
+  bucket = aws_s3_bucket.replica_bucket.id
+
+  rule {
+    id     = "replica-retention"
+    status = "Enabled"
+
+    filter {}
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+
+    transition {
+      days          = 30
+      storage_class = "STANDARD_IA"
+    }
+
+    transition {
+      days          = 90
+      storage_class = "GLACIER"
+    }
+
+    expiration {
+      days = 365
+    }
+  }
+}
