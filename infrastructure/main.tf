@@ -27,11 +27,13 @@ module "s3" {
   project_name   = var.project_name
   aws_account_id = data.aws_caller_identity.current.account_id
 }
-
 module "iam" {
-  source      = "./modules/iam"
-  environment = var.environment
-  bucket_name = module.s3.bucket_name
+  source         = "./modules/iam"
+  environment    = var.environment
+  bucket_name    = module.s3.bucket_name
+  aws_region     = var.aws_region
+  aws_account_id = data.aws_caller_identity.current.account_id
+  kms_key_arn    = module.lambda.kms_key_arn
 }
 
 module "lambda" {

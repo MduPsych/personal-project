@@ -72,7 +72,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
           "logs:CreateLogStream",
           "logs:PutLogEvents"
         ]
-        Resource = "arn:aws:logs:*:*:*"
+        Resource = "arn:aws:logs:${var.aws_region}:${var.aws_account_id}:log-group:/aws/lambda/${var.environment}-email-assistant:*"
       },
       {
         Sid    = "SQSAccess"
@@ -89,7 +89,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
           "kms:Decrypt",
           "kms:GenerateDataKey"
         ]
-        Resource = "*"
+        Resource = var.kms_key_arn
       }
     ]
   })

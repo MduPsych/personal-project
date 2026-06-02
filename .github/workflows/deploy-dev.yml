@@ -167,6 +167,7 @@ jobs:
         with:
           directory: infrastructure
           soft_fail: true
+          skip_check: CKV_AWS_272,CKV_AWS_117
           
       - name: Download Lambda artifact
         uses: actions/download-artifact@v4

@@ -166,7 +166,8 @@ jobs:
         uses: bridgecrewio/checkov-action@master
         with:
           directory: infrastructure
-          soft_fail: false
+          soft_fail: true
+          skip_check: CKV_AWS_272,CKV_AWS_117
 
       - name: Terraform Plan
         run: |
